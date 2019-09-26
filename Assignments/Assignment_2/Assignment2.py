@@ -12,10 +12,10 @@ match = 0
 mismatch = 0
 inDel = 0
 
-def printMatr(V):
+def printMatr(V): #prints the matrix passed in without commas, or brackets
     for i in range(0,len(V)):
-        print(str(V[i]).replace("[","").replace("]","").replace(",",""))
-
+        print(str(V[i]).replace("[","").replace("]","").replace(",",""),)
+        
 def prepMatr(S, T):
     Slen = len(S)+1
     Tlen = len(T)+1
@@ -30,7 +30,7 @@ def prepMatr(S, T):
     
     return V
 
-def scoring(s,t):
+def scoring(s,t): #checks if the characters match and returns the resulting value
     if(s == t):
         return match
     else:
@@ -39,7 +39,7 @@ def scoring(s,t):
 def fillMatr(S,T,V):
     Slen = len(S)
     Tlen = len(T)
-
+    
     for i in range(1,Slen):
         for j in range(1,Tlen):
             m = int(V[i-1][j-1] + scoring(S[i],T[j]))
@@ -49,13 +49,35 @@ def fillMatr(S,T,V):
             result = max(m,d,ins)
 
             V[i][j] = result
-
-    print("Optimal Score: "+str(V[Slen][Tlen]))
+            
+    print("Optimal Score: "+str(V[Slen-1][Tlen-1])+"\n")
     
     return V
 
 def globalAlign(S,T,V):
-   
+    alignedS = ""
+    alignedT = ""
+    i = len(S)-1
+    j = len(T)-1
+
+    while(i>0 and j>0):
+        if(i>0 and j>0 and V[i][j] == V[i][j] + scoring(S[i],T[j])):
+            alignedS = S[i] + alignedS
+            alignedT = T[j] + alignedT
+            i -= 1
+            j -= 1
+          
+        elif(i>0 and V[i][j] == V[i-1][j] + inDel):
+            alignedS = S[i] + alignedS
+            alignedT = "-" + alignedT
+            i -= 1
+
+        else:
+           alignedS = "-" + alignedS
+           alignedT = T[j] + alignedT
+           j -= 1
+           
+    return alignedS, alignedT
             
 #From assignment 1
 #Added fasta file
@@ -84,8 +106,14 @@ if len(sys.argv) > 1: #if command line input exists perform neccessary actions
 
     V = prepMatr(sequences[0][1],sequences[1][1])
 
-    globalAlign(" "+sequences[0][1]," "+sequences[1][1],V)
+    filledV = fillMatr(" "+sequences[0][1]," "+sequences[1][1],V) #Fills the matrix according to sent in values for match, mismatch, and insert/delete
 
+    alignedS, alignedT = globalAlign(" "+sequences[0][1]," "+sequences[1][1],V)
+
+    print("Alligned strings:")
+    print(alignedS)
+    print(alignedT)
+    
 else:
     #no fasta file end program
     quit()
