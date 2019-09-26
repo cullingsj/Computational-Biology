@@ -9,34 +9,67 @@ import numpy as np
 import sys
 
 match = 0
-mismatch = 1
-insertDelete = 1
+mismatch = 0
+inDel = 0
 
-def printMatr(matrix):
-    for i in range(len(matrix)):
-        print(matrix[i])
+def printMatr(V):
+    for i in range(0,len(V)):
+        print(str(V[i]).replace("[","").replace("]","").replace(",",""))
 
-def globalAlign(F, S):
-    Flen = len(F)
+def prepMatr(S, T):
+    Slen = len(S)+1
+    Tlen = len(T)+1
+    
+    V = [[0]*Tlen for i in range(Slen)] #initialize the matrix size |F| by |T|
+
+    for i in range(0,Slen):
+        V[i][0] = -i #initializing the outer edges of the matrix
+
+    for j in range(0,Tlen):
+        V[0][j] = -j #initializing the outer edges of the matrix
+    
+    return V
+
+def scoring(s,t):
+    if(s == t):
+        return match
+    else:
+        return mismatch
+
+def fillMatr(S,T,V):
     Slen = len(S)
+    Tlen = len(T)
+
+    for i in range(1,Slen):
+        for j in range(1,Tlen):
+            m = int(V[i-1][j-1] + scoring(S[i],T[j]))
+            d = int(V[i-1][j] + inDel)
+            ins = int(V[i][j-1] + inDel)
+            
+            result = max(m,d,ins)
+
+            V[i][j] = result
+
+    print("Optimal Score: "+str(V[Slen][Tlen]))
     
-    matrix = [[0]*Slen for i in range(Flen)] #initialize the matrix size Flen by Slen
+    return V
 
-    for i in range(Flen):
-        matrix[i][0] = i
-
-    for j in range(Slen):
-        matrix[0][j] = j
-
-    printMatr(matrix)
-    
-    return matrix
-
+def globalAlign(S,T,V):
+   
+            
 #From assignment 1
 #Added fasta file
 if len(sys.argv) > 1: #if command line input exists perform neccessary actions
     fasta_file = open(sys.argv[1], 'r')
 
+    try:
+        match = int(sys.argv[2])
+        mismatch = int(sys.argv[3])
+        inDel = int(sys.argv[4])
+
+    except:
+        print("Incorrect input")
+    
     seq_holder = ["",""]
     sequences = []
     for line in fasta_file:
@@ -49,8 +82,15 @@ if len(sys.argv) > 1: #if command line input exists perform neccessary actions
             sequences.append(tuple(seq_holder)) #changing from a list to a tuple so there's no way to change the data
             seq_holder = ["",""] #resetting seq_holder for the next sequence
 
-    globalAlign(sequences[0][1],sequences[1][1])
+    V = prepMatr(sequences[0][1],sequences[1][1])
+
+    globalAlign(" "+sequences[0][1]," "+sequences[1][1],V)
 
 else:
     #no fasta file end program
     quit()
+
+#########################################################################
+# References:                                                           #
+#   https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm    #
+#########################################################################
