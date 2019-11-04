@@ -36,6 +36,10 @@ def scoring(s,t): #checks if the characters match and returns the resulting valu
     else:
         return mismatch
 
+def setMismatch_InDel(mis, ID):
+    mismatch = mis
+    inDel = ID
+
 def fillMatr(S,T,V):
     Slen = len(S)
     Tlen = len(T)
@@ -78,7 +82,7 @@ def globalAlign(S,T,V):
            j -= 1
            
     return alignedS, alignedT
-            
+
 #From assignment 1
 #Added fasta file
 if len(sys.argv) > 1: #if command line input exists perform neccessary actions
