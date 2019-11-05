@@ -101,24 +101,77 @@ def distance(sequences):
         
     return distances
 
+def findDiff(original, updated):
+    changes = []
+    for i in range(len(updated)):
+        if(original[i] != updated[i] and updated[i] == '-'):
+            if(i == 0):
+                original = "-"+original
+            elif(i == len(original)-1):
+                original = original + "-"
+            else:
+                original = original[:i-1]+"-"+original[i+1:]
+            changes.append(i)
+    return changes
+
+def spaces(alignments):
+    multiple = []
+    optimal = alignments[0][0]
+    multiple.append(optimal)
+    for i in range(len(alignments)):
+        if(optimal == alignments[i][1]):
+            pass
+        elif(len(optimal) == len(alignments[i][1])):
+            multiple.append(alignments[i][1])
+        else:
+            changes = findDiff(optimal, alignments[i][1])
+            optimal = alignments[i][1]
+            for j in range(len(changes)):
+                for k in range(1,len(multiple)):
+                    if(changes[j] == 0):
+                        multiple[k] = "-"+multiple[k]
+                        
+                    elif(changes[j] == len(multiple[k])-1):
+                        multiple[k] = multiple[k] + "-"
+                        
+                    else:
+                        original = original[:i-1]+"-"+original[i+1:]
+                        multiple[k] = multiple[k][:changes[j]-1]+"-"+multiple[k][changes[j]+1:]
+
+            multiple.append(alignments[i][1])
+            
+    return multiple
+
 def centerStar(sequences):
     n = len(sequences)
     D_all = [[0]*n for i in range(n)]
     alignments = {}
     for i in range(n):
+        alignments[i] = []
         for j in range(n):
+            currAlign = {}
             V = prepMatr(sequences[i][1],sequences[j][1])
             _, optimal = fillMatr(" "+sequences[i][1]," "+sequences[j][1],V) #Fills the matrix according to sent in values for match, mismatch, and insert/delete
             D_all[i][j] = optimal
-            #_, alignments[i].append(globalAlign(" "+sequences[0][1]," "+sequences[1][1],V))
-
+            alignedI, alignedJ = globalAlign(" "+sequences[0][1]," "+sequences[1][1],V)
+            alignments[i].append({alignedI, alignedJ})
+    
     distances = distance(D_all)
     center = distances.index(min(distances))
+    final = spaces(alignments[center])
+    
     print("\nSummation of Alignment Scores:")
     for row in distances:
         print(row)
+        
     print("\nThe center string is %s" % sequences[center][1])
     print("with a score of %d" % distances[center])
+
+    print("Multiple Alginment:")
+    for entry in final:
+        print(entry)
+
+    
     
 
 #From assignment 1
