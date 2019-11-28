@@ -1,8 +1,8 @@
-#########################
-# Author: Josh Cullings #
-#                       #
-# Date: 11/28/2019      #
-#########################
+############################
+# Author(s): Josh Cullings #
+#            Daniel Laden  #
+# Date: 11/28/2019         #
+############################
 
 import sys
 
@@ -10,7 +10,6 @@ def rmq(table, lower, upper):
     print("\nEntered into rmq with lower: %d and upper: %d" %(lower,upper))
     print("Section of sequence: ", end='')
     print(*table[0][lower:upper])
-    print(*table[upper-lower])
     lowest = table[upper-lower][upper]
     print("Result: %d" % lowest)
 
@@ -25,9 +24,6 @@ def sparse_table(sequences):
                 #print(min(sequences[i:i+j]))
             else:
                 break
-    '''for i in range(len(seq_out)):
-        print(*seq_out[i], end = "")
-        print(": length = %d" % len(seq_out[i]))'''
     return seq_out
 
 # From assignment 1
@@ -37,6 +33,7 @@ if len(sys.argv) > 1:  # if command line input exists perform neccessary actions
 
     sequences = fasta_file.read().split(",")
     temp = [0 for x in range(len(sequences))]
+    # converting from a char set to an int set
     for i in range(len(sequences)):
         temp[i] = int(sequences[i])
     print(*sequences)
