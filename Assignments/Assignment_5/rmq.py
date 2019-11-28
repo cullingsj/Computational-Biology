@@ -7,12 +7,12 @@
 import sys
 
 def rmq(table, lower, upper):
-    print("Entered into rmq with lower: %d and upper: %d" %(lower,upper))
+    print("\nEntered into rmq with lower: %d and upper: %d" %(lower,upper))
     print("Section of sequence: ", end='')
     print(*table[0][lower:upper])
     print(*table[upper-lower])
-    lowest = min(table[upper-lower][lower])
-    print(lowest)
+    lowest = table[upper-lower][upper]
+    print("Result: %d" % lowest)
 
 def sparse_table(sequences):
     seq_out = [[0 for x in range(len(sequences))] for y in range(len(sequences))]
@@ -21,10 +21,13 @@ def sparse_table(sequences):
         for i in range(1,len(sequences)):
             if((i+j)<(len(sequences))):
                 seq_out[j][i+j] = min(sequences[i:i+j])
+                #print(*sequences[i:i+j])
+                #print(min(sequences[i:i+j]))
             else:
                 break
-    for i in range(len(seq_out)):
-        print(*seq_out[i])
+    '''for i in range(len(seq_out)):
+        print(*seq_out[i], end = "")
+        print(": length = %d" % len(seq_out[i]))'''
     return seq_out
 
 # From assignment 1
@@ -33,8 +36,11 @@ if len(sys.argv) > 1:  # if command line input exists perform neccessary actions
     fasta_file = open(sys.argv[1], 'r')
 
     sequences = fasta_file.read().split(",")
+    temp = [0 for x in range(len(sequences))]
+    for i in range(len(sequences)):
+        temp[i] = int(sequences[i])
     print(*sequences)
-    table = sparse_table(sequences)
+    table = sparse_table(temp)
     while(True):
         try:
             cont = input("Continue? (y/n) ")
