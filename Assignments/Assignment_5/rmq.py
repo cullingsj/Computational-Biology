@@ -8,7 +8,10 @@ import sys
 
 def rmq(table, lower, upper):
     print("Entered into rmq with lower: %d and upper: %d" %(lower,upper))
-    lowest = table[lower][upper]
+    print("Section of sequence: ", end='')
+    print(*table[0][lower:upper])
+    print(*table[upper-lower])
+    lowest = min(table[upper-lower][lower])
     print(lowest)
 
 def sparse_table(sequences):
@@ -20,8 +23,8 @@ def sparse_table(sequences):
                 seq_out[j][i+j] = min(sequences[i:i+j])
             else:
                 break
-    '''for i in range(len(seq_out)):
-        print(seq_out[i])'''
+    for i in range(len(seq_out)):
+        print(*seq_out[i])
     return seq_out
 
 # From assignment 1
@@ -30,14 +33,14 @@ if len(sys.argv) > 1:  # if command line input exists perform neccessary actions
     fasta_file = open(sys.argv[1], 'r')
 
     sequences = fasta_file.read().split(",")
-    print(sequences)
+    print(*sequences)
     table = sparse_table(sequences)
     while(True):
         try:
             cont = input("Continue? (y/n) ")
             if(cont == 'y'):
-                lower = int(input("Please type the lower bound for sequence size %d: " %len(sequences)))
-                upper = int(input("Please type the upper bound for sequence size %d, greater than lower bound %d: " %(len(sequences),lower)))
+                lower = int(input("Please type the lower bound in the range 0-%d: " %len(sequences)))
+                upper = int(input("Please type the upper bound in the range %d-%d: " %(lower,len(sequences))))
                 rmq(table, lower, upper)
             elif(cont == 'n'):
                 break
